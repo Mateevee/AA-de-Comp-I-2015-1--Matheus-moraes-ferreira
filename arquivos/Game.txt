@@ -1,0 +1,106 @@
+// ConsoleApplication1.cpp : Defines the entry point for the console application.
+//
+
+#include "stdafx.h"
+#include <stdio.h>
+#include <iostream>
+#include <SDL\SDL.h>
+using namespace std;
+
+
+int main(int argc, char** argv)
+{
+	
+	SDL_Window* tela = nullptr;
+	SDL_Surface* handler = nullptr;
+	SDL_Surface* fundo = nullptr;
+	SDL_Event ev;
+	SDL_Renderer*render = nullptr;
+	SDL_Surface*teste = SDL_LoadBMP("C:\\Users\\matee_000\\Documents\\image.bmp");
+	SDL_Texture*imagem = NULL;
+	int tempo = 0;
+	int posx = 0;
+	int posy = 0;
+    bool exe = true;
+	int time=0;
+	int persowidth, persoheight;
+	int telaH, telaW;
+	
+	SDL_Init(SDL_INIT_EVERYTHING);
+	tela = SDL_CreateWindow("Teste", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 720, 480, SDL_WINDOW_SHOWN);
+	handler = SDL_GetWindowSurface(tela);
+	fundo = SDL_LoadBMP("C:\\Users\\matee_000\\Documents\\Teste.bmp");
+	imagem = SDL_CreateTextureFromSurface(render, teste);
+	SDL_QueryTexture(imagem, NULL, NULL, &persowidth, &persoheight);
+	render = SDL_CreateRenderer(tela, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	telaH = persoheight / 4;
+	telaW = persowidth / 3;
+	SDL_Rect personagem;
+	personagem.x = 0;
+	personagem.y = 0;
+	personagem.h = persoheight;
+	personagem.w = persowidth;
+	SDL_SetRenderDrawColor(render, 0xFF, 0, 0, 0xFF);
+
+	while (exe)
+	{
+		//tempo = SDL_GetTicks();
+		while ((SDL_PollEvent(&ev) != 0))
+		{
+			switch (ev.type)
+			{
+			case SDL_KEYDOWN:
+				switch (ev.key.keysym.sym)
+				{
+				case SDLK_ESCAPE:
+					exe = false;
+					break;
+				case SDLK_RIGHT:
+					posx = 1.0;
+					posy = 0.0;
+					break;
+				case SDLK_LEFT:
+					posx = -1.0;
+					posy = 0.0;
+					break;
+				case SDLK_UP:
+					posx = 0.0;
+					posy = -1.0;
+					break;
+				case SDLK_DOWN:
+					posx = 0.0;
+					posy = 1.0;
+					break;
+				}
+				break;
+			case SDL_KEYUP:
+				posx = 0.0;
+				posy = 0.0;
+				break;
+			case SDL_QUIT:
+				exe = false;
+				break;
+			}
+		}
+		time++;
+		if (60/time==4)
+		{
+			time = 0;
+			personagem.x = telaW;
+			if (personagem.x >= persowidth)
+				personagem.x = 0;
+		}
+		
+     
+		SDL_RenderClear(render);
+		SDL_RenderCopy(render,imagem,&personagem,NULL);
+		SDL_RenderPresent(render);
+		
+	}
+
+	SDL_FreeSurface(fundo);
+	fundo = nullptr;
+	SDL_DestroyWindow(tela);
+	SDL_Quit();
+	return 0;
+}
